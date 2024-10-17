@@ -22,7 +22,36 @@ class MyApp extends StatelessWidget {
           elevation: 0,
         ),
       ),
-      home: const TaskPage(),
+      home: const SplashScreen(), // Set SplashScreen as home
+    );
+  }
+}
+
+class SplashScreen extends StatelessWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Use a Future to navigate after 3 seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const TaskPage()),
+      );
+    });
+
+    return Scaffold(
+      body: Container(
+        width: double.infinity, // Full width
+        height: double.infinity, // Full height
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image:
+                AssetImage('imithon/A.jpg'), // Ensure the image path is correct
+            fit:
+                BoxFit.cover, // This makes the image cover the entire container
+          ),
+        ),
+      ),
     );
   }
 }
@@ -276,6 +305,14 @@ class TaskList extends StatelessWidget {
                 },
                 activeColor: Colors.greenAccent,
               ),
+              onTap: () {
+                // Navigate to DetailsScreen
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => DetailsScreen(task: tasks[index]),
+                  ),
+                );
+              },
             ),
           ),
         );
@@ -317,7 +354,9 @@ class TaskList extends StatelessWidget {
   }
 
   String _formatDateTime(BuildContext context, DateTime date, TimeOfDay time) {
-    return '${date.toString().split(' ')[0]} at ${time.format(context)}';
+    final dateString = '${date.day}/${date.month}/${date.year}';
+    final timeString = '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
+    return '$dateString at $timeString';
   }
 }
 
@@ -480,5 +519,44 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
         _time = picked;
       });
     }
+  }
+}
+
+// deatils
+class DetailsScreen extends StatelessWidget {
+  final Task task;
+
+  const DetailsScreen({Key? key, required this.task}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title:
+            Text(task.title, style: const TextStyle(color: Colors.greenAccent)),
+      ),
+      body: Container(
+        color: Colors.black,
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Description: ${task.description}',
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Date: ${task.date.day}/${task.date.month}/${task.date.year}',
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            ),
+            Text(
+              'Time: ${task.time.hour}:${task.time.minute.toString().padLeft(2, '0')}',
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
